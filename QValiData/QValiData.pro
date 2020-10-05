@@ -27,6 +27,7 @@ CONFIG += c++11
 INCLUDEPATH += \
         /usr/local/include/opencv4 \
         /usr/include/iir \
+        /usr/local/include \
         ActDetSimView \
         ADXLSimView \
         FileSelector \
@@ -55,7 +56,7 @@ LIBS += \
         -lopencv_tracking
 
 SOURCES += \
-    ../lib/ADXLSim/adxlsim.cpp \
+        ../lib/ADXLSim/adxlsim.cpp \
         ../lib/ActivityDetector/activitydetector.cpp \
         ../lib/CloseupVideoViewer/closeupvideoviewer.cpp \
         ../lib/MotionPath/motionpath.cpp \
