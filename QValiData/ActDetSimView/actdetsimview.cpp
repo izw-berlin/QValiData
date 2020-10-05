@@ -35,6 +35,7 @@ void ActDetSimView::init(){
     ui->trackBar->setTickInterval(1);
     ui->trackBar->setMinimum(0);
     ui->trackBar->setMaximum(ui->vidWidget->getTotalFrames() - 1);
+    ui->vidWidget->setMagnify(true);
 
     qreal firstTime = data->timeColumnData()->first();
     qreal lastTime = data->timeColumnData()->last();
