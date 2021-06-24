@@ -383,5 +383,9 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::about(this, "", "QValiData\nDeveloped by Jiawei Chen\nSpecial thanks to: Geoffrey Brown, Adam Fudickar, and David Crandall");
+    QMessageBox::about(this, "", "QValiData\nDeveloped by Jiawei Chen\n\
+Special thanks to:\n     Geoffrey Brown\n     Adam Fudickar\n     David Crandall\n\
+This material is based upon work supported by the National Science Foundation under Grant No. 1644717.\n\
+Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors \
+and do not necessarily reflect the views of the National Science Foundation.");
 }
