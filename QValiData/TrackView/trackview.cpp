@@ -437,6 +437,7 @@ void TrackView::on_customPlot_doubleClick(QMouseEvent *e){
 
             if (manualAdd1 != -1 && manualAdd2 != -1){
                 paths->append(new MotionPath(qMin(manualAdd1, manualAdd2), qMax(manualAdd1, manualAdd2)));
+                ui->button_addAnnot->setText("Double-Click for Point 1, Click to Cancel");
                 manualAdd1 = -1;
                 manualAdd2 = -1;
                 plotMotionTracks();
