@@ -207,6 +207,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="checkBox_showPaths">
+          <property name="text">
+           <string>Show Motion Paths</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QLabel" name="label_3">

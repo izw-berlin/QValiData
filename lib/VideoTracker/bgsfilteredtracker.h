@@ -12,6 +12,9 @@
 #define WIDTH_RETRACK_EXPAND 10
 #define BGS_BLUR_RADIUS 21
 
+#define THICKNESS_LINE_OUTER 5
+#define THICKNESS_LINE_INNER 2
+
 class BGSFilteredTracker : public OpenCVVideoPlayer
 {
     Q_OBJECT
@@ -35,6 +38,8 @@ public:
     void attachtoPathList(QList<MotionPath *> *paths);
 
     bool isPlaying();
+
+    void setShowPaths(bool show);
 protected:
     void keyPressEvent(QKeyEvent *e) override;
 
@@ -53,6 +58,7 @@ private:
     MotionPath *currentPath;
     QList<MotionPath *> *paths;
     void addPoint(int frame, QPoint point);
+    bool showPaths;
 
 signals:
     void pathsUpdated();

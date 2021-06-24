@@ -458,3 +458,11 @@ void TrackView::on_button_addAnnot_toggled(bool checked)
         ui->button_addAnnot->setText("Manually Add Annotation...");
     }
 }
+
+void TrackView::on_checkBox_showPaths_toggled(bool checked)
+{
+    if(hasInit){
+        ui->vidWidget->setShowPaths(checked);
+        ui->vidWidget->frameUpdate();
+    }
+}

@@ -74,6 +74,8 @@ private slots:
 
     void on_button_addAnnot_toggled(bool checked);
 
+    void on_checkBox_showPaths_toggled(bool checked);
+
 public slots:
     void syncCap();
     void syncPath();

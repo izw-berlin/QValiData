@@ -1,4 +1,4 @@
-#include "bgsfilteredtracker.h"
+﻿#include "bgsfilteredtracker.h"
 #include <QDebug>
 
 using namespace cv;
@@ -22,6 +22,8 @@ void BGSFilteredTracker::init(){
     frameIn = new Mat();
     frameBGS = new Mat();
     frameOut = new Mat();
+
+    showPaths = true;
 
     kalmanFilter = new KalmanFilter(4, 2, 0, CV_32F);
     float dt = 10.;
@@ -135,7 +137,7 @@ void BGSFilteredTracker::frameUpdate(){
             }
         }
         //addWeighted(*frameBGS, 0.5, *frameIn, 0.5, 0, *frameOut);
-        frameOut = frameIn;
+        *frameOut = frameIn->clone();
         // If we don't detect any motion, we tell the tracker to skip ahead until we find motion again.
         if(rects->empty() && state != SEEK && state != TRACK && state != PLAYING){
             state = NOMOTION;
@@ -199,26 +201,38 @@ void BGSFilteredTracker::frameUpdate(){
             state = NOMOTION;
             frameTimer->start(1); // Some fast timer to get another frame
         }
-
         // Draw path
         if(currentPath != nullptr){
             if(currentPath->contains(frameNumber)){
                 QPoint thePoint = currentPath->getPoint(frameNumber);
-                circle(*frameOut, Point(thePoint.x(), thePoint.y()), 20, Scalar(255, 255, 255), 4);
-                QPoint lastPoint = currentPath->getPoint(currentPath->start);
+                // Draw shapes twice--first in black, and then thinner in white for enhanced contrast
+                circle(*frameOut, Point(thePoint.x(), thePoint.y()), 20, Scalar(0, 0, 0, 255), THICKNESS_LINE_OUTER);
+                circle(*frameOut, Point(thePoint.x(), thePoint.y()), 20, Scalar(255, 255, 255, 255), THICKNESS_LINE_INNER);
 
-                for(int i=1; i<(currentPath->end - currentPath->start); i++){
-                    QPoint nextPoint = currentPath->getPoint(currentPath->start + i);
-                    line(*frameOut, Point(nextPoint.x(), nextPoint.y()),
-                         Point(lastPoint.x(), lastPoint.y()),
-                         Scalar(127, 127, 127), 4);
-                    lastPoint = QPoint(nextPoint);
+                if(showPaths){
+                    // Two loops for drawing paths because line endcaps cause strange visual effects when drawn simultaneously
+                    QPoint lastPoint = currentPath->getPoint(currentPath->start);
+                    for(int i=1; i<(currentPath->end - currentPath->start); i++){
+                        QPoint nextPoint = currentPath->getPoint(currentPath->start + i);
+                        line(*frameOut, Point(nextPoint.x(), nextPoint.y()),
+                             Point(lastPoint.x(), lastPoint.y()),
+                             Scalar(0, 0, 0), THICKNESS_LINE_OUTER);
+                        lastPoint = QPoint(nextPoint);
+                    }
+                    lastPoint = currentPath->getPoint(currentPath->start);
+                    for(int i=1; i<(currentPath->end - currentPath->start); i++){
+                        QPoint nextPoint = currentPath->getPoint(currentPath->start + i);
+                        line(*frameOut, Point(nextPoint.x(), nextPoint.y()),
+                             Point(lastPoint.x(), lastPoint.y()),
+                             Scalar(255, 255, 255), THICKNESS_LINE_INNER);
+                        lastPoint = QPoint(nextPoint);
+                    }
                 }
             }
         }
-
         if(!frameOut->empty())
             imshow(*frameOut);
+
     }
     else{ //Stop when reached end of playback
         if(!frameIn->empty()) //Show a "preview" of current frame, if available
@@ -402,4 +416,8 @@ void BGSFilteredTracker::seekToPath(MotionPath *path){
 
 QList<MotionPath *> *BGSFilteredTracker::getPaths(){
     return paths;
+}
+
+void BGSFilteredTracker::setShowPaths(bool show){
+    showPaths = show;
 }
