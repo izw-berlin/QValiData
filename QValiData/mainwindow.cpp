@@ -383,7 +383,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::about(this, "", "QValiData\nDeveloped by Jiawei Chen\n\
+    QMessageBox::about(this, "", "QValiData 1.1.0\nDeveloped by Jiawei Chen\n\
 Special thanks to:\n     Geoffrey Brown\n     Adam Fudickar\n     David Crandall\n\
 This material is based upon work supported by the National Science Foundation under Grant No. 1644717.\n\
 Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authors \

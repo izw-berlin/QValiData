@@ -58,6 +58,7 @@ private:
     MotionPath *currentPath;
     QList<MotionPath *> *paths;
     void addPoint(int frame, QPoint point);
+    void drawPath(cv::Mat *img, MotionPath *currentPath, int frameNumber);
     bool showPaths;
 
 signals:

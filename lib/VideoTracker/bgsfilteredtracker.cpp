@@ -85,6 +85,36 @@ void BGSFilteredTracker::drawRectOutline(InputOutputArray img, Rect rect, int ex
               color, width);
 }
 
+void BGSFilteredTracker::drawPath(Mat *img, MotionPath *currentPath, int frame){
+    if(currentPath != nullptr){
+        if(currentPath->contains(frame)){
+            if(showPaths){
+                // Two loops for drawing paths because line endcaps cause strange visual effects when drawn simultaneously
+                QPoint lastPoint = currentPath->getPoint(currentPath->start);
+                for(int i=1; i<(currentPath->end - currentPath->start); i++){
+                    QPoint nextPoint = currentPath->getPoint(currentPath->start + i);
+                    line(*img, Point(nextPoint.x(), nextPoint.y()),
+                         Point(lastPoint.x(), lastPoint.y()),
+                         Scalar(0, 0, 0), THICKNESS_LINE_OUTER);
+                    lastPoint = QPoint(nextPoint);
+                }
+                lastPoint = currentPath->getPoint(currentPath->start);
+                for(int i=1; i<(currentPath->end - currentPath->start); i++){
+                    QPoint nextPoint = currentPath->getPoint(currentPath->start + i);
+                    line(*img, Point(nextPoint.x(), nextPoint.y()),
+                         Point(lastPoint.x(), lastPoint.y()),
+                         Scalar(255, 255, 255), THICKNESS_LINE_INNER);
+                    lastPoint = QPoint(nextPoint);
+                }
+            }
+            QPoint thePoint = currentPath->getPoint(frame);
+            // Draw shapes twice--first in black, and then thinner in white for enhanced contrast
+            circle(*img, Point(thePoint.x(), thePoint.y()), 20, Scalar(0, 0, 0, 255), THICKNESS_LINE_OUTER);
+            circle(*img, Point(thePoint.x(), thePoint.y()), 20, Scalar(255, 255, 255, 255), THICKNESS_LINE_INNER);
+        }
+    }
+}
+
 void BGSFilteredTracker::printState(){
     switch(state){
     case NOMOTION:
@@ -202,41 +232,17 @@ void BGSFilteredTracker::frameUpdate(){
             frameTimer->start(1); // Some fast timer to get another frame
         }
         // Draw path
-        if(currentPath != nullptr){
-            if(currentPath->contains(frameNumber)){
-                QPoint thePoint = currentPath->getPoint(frameNumber);
-                // Draw shapes twice--first in black, and then thinner in white for enhanced contrast
-                circle(*frameOut, Point(thePoint.x(), thePoint.y()), 20, Scalar(0, 0, 0, 255), THICKNESS_LINE_OUTER);
-                circle(*frameOut, Point(thePoint.x(), thePoint.y()), 20, Scalar(255, 255, 255, 255), THICKNESS_LINE_INNER);
-
-                if(showPaths){
-                    // Two loops for drawing paths because line endcaps cause strange visual effects when drawn simultaneously
-                    QPoint lastPoint = currentPath->getPoint(currentPath->start);
-                    for(int i=1; i<(currentPath->end - currentPath->start); i++){
-                        QPoint nextPoint = currentPath->getPoint(currentPath->start + i);
-                        line(*frameOut, Point(nextPoint.x(), nextPoint.y()),
-                             Point(lastPoint.x(), lastPoint.y()),
-                             Scalar(0, 0, 0), THICKNESS_LINE_OUTER);
-                        lastPoint = QPoint(nextPoint);
-                    }
-                    lastPoint = currentPath->getPoint(currentPath->start);
-                    for(int i=1; i<(currentPath->end - currentPath->start); i++){
-                        QPoint nextPoint = currentPath->getPoint(currentPath->start + i);
-                        line(*frameOut, Point(nextPoint.x(), nextPoint.y()),
-                             Point(lastPoint.x(), lastPoint.y()),
-                             Scalar(255, 255, 255), THICKNESS_LINE_INNER);
-                        lastPoint = QPoint(nextPoint);
-                    }
-                }
-            }
-        }
+        drawPath(frameOut, currentPath, frameNumber);
         if(!frameOut->empty())
             imshow(*frameOut);
 
     }
     else{ //Stop when reached end of playback
-        if(!frameIn->empty()) //Show a "preview" of current frame, if available
-            imshow(*frameIn);
+        if(!frameIn->empty()){ //Show a "preview" of current frame, if available
+            *frameOut = frameIn->clone();
+            drawPath(frameOut, currentPath, frameNumber);
+            imshow(*frameOut);
+        }
         playing = false;
         emit playStateChanged(false);
     }
