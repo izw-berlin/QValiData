@@ -61,16 +61,36 @@ void OpenCVVideoPlayer::pause(){
     emit playStateChanged(false);
 }
 
+void OpenCVVideoPlayer::seekAdjust(int targetFrame){
+    if (targetFrame == 0){
+        cap->set(CAP_PROP_POS_FRAMES, 0);
+        return;
+    }
+    // Sometimes OpenCV has a hard time seeking to exact frames, or does so with an unpredictable offset.
+    // This is a rudimentary "proportional" feedback controller that attempts to bring OpenCV's
+    // frame position closer to the desired position by sampling the error and applying compensation until
+    // they match.
+    // VID_SEEK_MAX_ATTEMPTS is the maximum number of iterations the feedback loop will run before giving up,
+    // to prevent infinite loops.
+    int attempts = 0;
+    int actual = cap->get(CAP_PROP_POS_FRAMES);
+    int frameSetPoint = targetFrame;
+    while (attempts < VID_SEEK_MAX_ATTEMPTS && abs(targetFrame - actual) != 0){
+        frameSetPoint += (targetFrame - actual);
+        cap->set(CAP_PROP_POS_FRAMES, frameSetPoint);
+        actual = cap->get(CAP_PROP_POS_FRAMES);
+        ++attempts;
+    }
+}
 void OpenCVVideoPlayer::seek(int framenumber_new){
     // Constrains frame number within first and last frame numbers.
     int targetFrame = qMin(qMax(0, framenumber_new), videoLength-1);
-    cap->set(CAP_PROP_POS_FRAMES, targetFrame);
+    seekAdjust(targetFrame);
     //Update the playback window with a "preview" of the current frame
     cap->read(*frameIn);
     frameUpdate();
     // Move playhead back to where it was prior to grabbing a preview frame
-    cap->set(CAP_PROP_POS_FRAMES, targetFrame);
-
+    seekAdjust(targetFrame);
     // Only emit the change signal if frame number actually changes. Otherwise,
     // still go through the motions, but don't emit the change signal.
     if(targetFrame != frameNumber){

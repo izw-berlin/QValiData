@@ -6,6 +6,8 @@
 #include <QTimer>
 #include "opencvdisplay.h"
 
+#define VID_SEEK_MAX_ATTEMPTS 10
+
 class OpenCVVideoPlayer : public OpenCVDisplay
 {
     Q_OBJECT
@@ -75,6 +77,7 @@ protected:
 
     // Get capture device info
     void getCapProperties();
+    void seekAdjust(int targetFrame);
 signals:
     //Emits whenever the frame count is changed.
     void positionChanged(int frame);

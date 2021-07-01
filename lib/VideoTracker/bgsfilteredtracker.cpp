@@ -309,7 +309,7 @@ bool BGSFilteredTracker::advanceFrame(){
 bool BGSFilteredTracker::reverseFrame(){
     if(frameNumber > 0){
         state = SEEK;
-        cap->set(CAP_PROP_POS_FRAMES, cap->get(CAP_PROP_POS_FRAMES) - 2);
+        seekAdjust(cap->get(CAP_PROP_POS_FRAMES) - 2);
         bool result = advanceFrame();
         if(result){
             emit positionChanged(frameNumber);
@@ -343,13 +343,13 @@ void BGSFilteredTracker::seek(int framenumber_new){
 
     // Only emit the change signal if frame number actually changes.
     if(targetFrame != oldFrame){
-        cap->set(CAP_PROP_POS_FRAMES, targetFrame);
+        seekAdjust(targetFrame);
         //Update the playback window with a "preview" of the current frame
         state = SEEK;
         advanceFrame();
         frameUpdate();
         // Move playhead back to where it was prior to grabbing a preview frame
-        cap->set(CAP_PROP_POS_FRAMES, targetFrame);
+        seekAdjust(targetFrame);
 
         frameNumber = targetFrame;
         emit positionChanged(frameNumber);
