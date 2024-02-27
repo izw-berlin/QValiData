@@ -4,6 +4,7 @@
 #include <QList>
 #include <QMap>
 #include <QString>
+#include <QPoint>
 
 class MotionPath
 {

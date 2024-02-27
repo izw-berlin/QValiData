@@ -44,7 +44,7 @@ bool FilteredTracker::update(Mat *frame, QList<Rect> *boxes, Mat *annotation){
     kalmanPredictY = int(kalmanPredict.at<float>(1, 0));
 
     // Update tracker and get bounding box for actual position
-    Rect_<double> trackBox;
+    Rect_<int> trackBox;
     bool trackSuccess = track->update(*frame, trackBox);
 
     // Sometimes the tracker fails and that wouldn't be so useful, so we default to a null value
@@ -88,7 +88,7 @@ bool FilteredTracker::update(Mat *frame, QList<Rect> *boxes, Mat *annotation){
         // Try to re-train tracker on the nearest rectangle if it's close enough.
         if(distNearestBox >= 0 && distNearestBox < TRACKER_MAX_DIST){
             qDebug() << "Re-tracked";
-            track->clear();
+            // track->clear();
             track->init(*frame, nearest);
             double boxCenterX = nearest.x + (0.5 * nearest.width);
             double boxCenterY = nearest.y + (0.5 * nearest.height);

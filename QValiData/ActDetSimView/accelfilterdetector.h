@@ -1,5 +1,8 @@
 #ifndef ACCELFILTERDETECTOR_H
 #define ACCELFILTERDETECTOR_H
+
+#include <QMap>
+
 #include "activitydetector.h"
 #include "Iir.h"
 

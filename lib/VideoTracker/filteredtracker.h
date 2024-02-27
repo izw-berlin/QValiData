@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QPoint>
-#include <opencv2/video/tracking.hpp>
-#include <opencv2/tracking/tracker.hpp>
+#include <opencv2/tracking.hpp>
+#include <opencv2/imgproc/types_c.h>
 
 #define BGS_MIN_AREA 25
 #define BGS_MAX_AREA 5000

@@ -1,6 +1,7 @@
 #include "timeseries.h"
 #include <QtMath>
 #include <QDebug>
+#include <QPoint>
 
 TimeSeries::TimeSeries()
 {
